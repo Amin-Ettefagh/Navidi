@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Navidi Rotate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-gray-900 text-white h-screen flex items-center justify-center"
+  >
+    <div
+      id="login-container"
+      class="flex flex-col items-center space-y-4 p-6 bg-gray-800 rounded-lg shadow-lg"
+    >
+      <label for="username" class="text-lg">نام کاربری:</label>
+      <input
+        type="text"
+        id="username"
+        class="p-2 text-black rounded w-full"
+        placeholder="نام کاربری"
+      />
+      <label for="password" class="text-lg">رمز عبور:</label>
+      <input
+        type="password"
+        id="password"
+        class="p-2 text-black rounded w-full"
+        placeholder="رمز عبور"
+      />
+      <button
+        id="login-button"
+        class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
+      >
+        ورود
+      </button>
+      <p id="error-message" class="text-red-500 hidden">
+        رمز عبور یا نام کاربری اشتباه است
+      </p>
+    </div>
+
+    <div
+      id="rotation-container"
+      class="hidden flex flex-col items-center space-y-4 p-6 bg-gray-800 rounded-lg shadow-lg"
+    >
+      <label for="rotation-speed" class="text-lg">تعداد دور در ثانیه:</label>
+      <input
+        type="number"
+        id="rotation-speed"
+        class="p-2 text-black rounded w-full"
+        placeholder="عدد بین 1 تا 500"
+      />
+      <button
+        id="set-speed-button"
+        class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded"
+      >
+        ثبت
+      </button>
+      <p id="speed-error-message" class="text-red-500 hidden">
+        عدد وارد شده معتبر نیست
+      </p>
+    </div>
+
+    <div
+      id="image-container"
+      class="hidden w-full h-full fixed top-0 left-0 flex items-center justify-center"
+    >
+      <img
+        id="rotating-image"
+        class="absolute cursor-pointer w-32 h-32 object-contain"
+        src="Navidi.png"
+        alt="Navidi Rotate"
+      />
+    </div>
+
+    <script>
+      const loginContainer = document.getElementById("login-container");
+      const rotationContainer = document.getElementById("rotation-container");
+      const imageContainer = document.getElementById("image-container");
+      const rotatingImage = document.getElementById("rotating-image");
+
+      document.getElementById("login-button").addEventListener("click", () => {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        if (username === "Vitsell" && password === "Vitsell") {
+          loginContainer.classList.add("hidden");
+          rotationContainer.classList.remove("hidden");
+        } else {
+          document.getElementById("error-message").classList.remove("hidden");
+        }
+      });
+
+      document
+        .getElementById("set-speed-button")
+        .addEventListener("click", () => {
+          const speed = parseInt(
+            document.getElementById("rotation-speed").value,
+            10
+          );
+          if (Number.isInteger(speed) && speed >= 1 && speed <= 500) {
+            rotationContainer.classList.add("hidden");
+            imageContainer.classList.remove("hidden");
+            startMouseFollowWithRotation(speed);
+          } else {
+            document
+              .getElementById("speed-error-message")
+              .classList.remove("hidden");
+          }
+        });
+
+      function startMouseFollowWithRotation(speed) {
+        const rotationDuration = 1000 / speed;
+        rotatingImage.style.animation = `spin ${rotationDuration}ms linear infinite`;
+
+        document.addEventListener("mousemove", (event) => {
+          const mouseX = event.clientX - rotatingImage.offsetWidth / 2;
+          const mouseY = event.clientY - rotatingImage.offsetHeight / 2;
+
+          rotatingImage.style.left = `${mouseX}px`;
+          rotatingImage.style.top = `${mouseY}px`;
+        });
+      }
+
+      const keyframes = `
+            @keyframes spin {
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        `;
+      const styleSheet = document.createElement("style");
+      styleSheet.type = "text/css";
+      styleSheet.innerText = keyframes;
+      document.head.appendChild(styleSheet);
+    </script>
+  </body>
+</html>
