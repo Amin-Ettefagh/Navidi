@@ -64,32 +64,14 @@
       id="image-container"
       class="hidden w-full h-full fixed top-0 left-0 flex items-center justify-center"
     >
-      <img
-        id="rotating-image"
-        class="absolute cursor-pointer w-32 h-32 object-contain"
-        src="Navidi.png"
-        alt="Navidi Rotate"
-      />
-            <img
-        id="rotating-image"
-        class="absolute cursor-pointer w-32 h-32 object-contain"
-        src="Navidi.png"
-        alt="Navidi Rotate"
-      />
-            <img
-        id="rotating-image"
-        class="absolute cursor-pointer w-32 h-32 object-contain"
-        src="Navidi.png"
-        alt="Navidi Rotate"
-      />
-      <H1>uchimata</H1>
+      <div id="rotating-images" class="absolute"></div>
     </div>
 
     <script>
       const loginContainer = document.getElementById("login-container");
       const rotationContainer = document.getElementById("rotation-container");
       const imageContainer = document.getElementById("image-container");
-      const rotatingImage = document.getElementById("rotating-image");
+      const rotatingImages = document.getElementById("rotating-images");
 
       document.getElementById("login-button").addEventListener("click", () => {
         const username = document.getElementById("username").value;
@@ -122,28 +104,45 @@
 
       function startMouseFollowWithRotation(speed) {
         const rotationDuration = 1000 / speed;
-        rotatingImage.style.animation = `spin ${rotationDuration}ms linear infinite`;
+
+        const images = [
+          "Navidi.png",
+          "Navidi.png",
+          "Navidi.png",
+        ];
+
+        images.forEach((src, index) => {
+          const img = document.createElement("img");
+          img.src = src;
+          img.classList.add("rotating-image");
+          img.style.position = "absolute";
+          img.style.width = "50px";
+          img.style.height = "50px";
+          img.style.transformOrigin = "center";
+          rotatingImages.appendChild(img);
+        });
+
+        const rotatingImageElements = document.querySelectorAll(
+          ".rotating-image"
+        );
 
         document.addEventListener("mousemove", (event) => {
-          const mouseX = event.clientX - rotatingImage.offsetWidth / 2;
-          const mouseY = event.clientY - rotatingImage.offsetHeight / 2;
+          const mouseX = event.clientX;
+          const mouseY = event.clientY;
 
-          rotatingImage.style.left = `${mouseX}px`;
-          rotatingImage.style.top = `${mouseY}px`;
+          rotatingImages.style.left = `${mouseX}px`;
+          rotatingImages.style.top = `${mouseY}px`;
+
+          rotatingImageElements.forEach((img, index) => {
+            const angle = (index * 120 + performance.now() / rotationDuration) % 360;
+            const radian = (angle * Math.PI) / 180;
+            const radius = 100; // فاصله از مرکز
+            img.style.transform = `translate(${Math.cos(radian) * radius}px, ${
+              Math.sin(radian) * radius
+            }px)`;
+          });
         });
       }
-
-      const keyframes = `
-            @keyframes spin {
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-        `;
-      const styleSheet = document.createElement("style");
-      styleSheet.type = "text/css";
-      styleSheet.innerText = keyframes;
-      document.head.appendChild(styleSheet);
     </script>
   </body>
 </html>
